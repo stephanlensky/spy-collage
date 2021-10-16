@@ -76,6 +76,25 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "dateparser"
+version = "1.1.0"
+description = "Date parsing library designed to parse dates from HTML pages"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+python-dateutil = "*"
+pytz = "*"
+regex = "<2019.02.19 || >2019.02.19,<2021.8.27 || >2021.8.27"
+tzlocal = "*"
+
+[package.extras]
+calendars = ["convertdate", "hijri-converter", "convertdate"]
+fasttext = ["fasttext"]
+langdetect = ["langdetect"]
+
+[[package]]
 name = "docformatter"
 version = "1.4"
 description = "Formats docstrings to follow PEP 257."
@@ -186,10 +205,29 @@ platformdirs = ">=2.2.0"
 toml = ">=0.7.1"
 
 [[package]]
+name = "python-dateutil"
+version = "2.8.2"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
+name = "pytz"
+version = "2021.3"
+description = "World timezone definitions, modern and historical"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "regex"
 version = "2021.10.8"
 description = "Alternative regular expression module, to replace re."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -218,6 +256,14 @@ description = "Python 2 and 3 compatibility utilities"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "spotify-uri"
+version = "1.0.3"
+description = "This project port \"@TooTallNate/spotify-uri\" to Python."
+category = "main"
+optional = false
+python-versions = ">=3"
 
 [[package]]
 name = "spotipy"
@@ -253,12 +299,42 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-dateparser"
+version = "1.0.7"
+description = "Typing stubs for dateparser"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "3.10.0.2"
 description = "Backported and Experimental Type Hints for Python 3.5+"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "tzdata"
+version = "2021.2.post0"
+description = "Provider of IANA time zone data"
+category = "main"
+optional = false
+python-versions = ">=2"
+
+[[package]]
+name = "tzlocal"
+version = "3.0"
+description = "tzinfo object for the local timezone"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+tzdata = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+test = ["pytest-mock (>=3.3)", "pytest (>=4.3)"]
 
 [[package]]
 name = "untokenize"
@@ -292,7 +368,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a7569930ba5fc1060d0ddc0fb3cdb40ce79f2e5998850041fec149f4f7fb6452"
+content-hash = "b7e6fdd10ffcffae3e15a9bebc2df2b40875b7568fa873ef6abaffd538f63ce9"
 
 [metadata.files]
 astroid = [
@@ -318,6 +394,10 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+dateparser = [
+    {file = "dateparser-1.1.0-py2.py3-none-any.whl", hash = "sha256:fec344db1f73d005182e214c0ff27313c748bbe0c1638ce9d48a809ddfdab2a0"},
+    {file = "dateparser-1.1.0.tar.gz", hash = "sha256:faa2b97f51f3b5ff1ba2f17be90de2b733fb6191f89b4058787473e8202f3044"},
 ]
 docformatter = [
     {file = "docformatter-1.4.tar.gz", hash = "sha256:064e6d81f04ac96bc0d176cbaae953a0332482b22d3ad70d47c8a7f2732eef6f"},
@@ -399,6 +479,14 @@ pylint = [
     {file = "pylint-2.11.1-py3-none-any.whl", hash = "sha256:0f358e221c45cbd4dad2a1e4b883e75d28acdcccd29d40c76eb72b307269b126"},
     {file = "pylint-2.11.1.tar.gz", hash = "sha256:2c9843fff1a88ca0ad98a256806c82c5a8f86086e7ccbdb93297d86c3f90c436"},
 ]
+python-dateutil = [
+    {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
+    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+pytz = [
+    {file = "pytz-2021.3-py2.py3-none-any.whl", hash = "sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c"},
+    {file = "pytz-2021.3.tar.gz", hash = "sha256:acad2d8b20a1af07d4e4c9d2e9285c5ed9104354062f275f3fcd88dcef4f1326"},
+]
 regex = [
     {file = "regex-2021.10.8-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:094a905e87a4171508c2a0e10217795f83c636ccc05ddf86e7272c26e14056ae"},
     {file = "regex-2021.10.8-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:981c786293a3115bc14c103086ae54e5ee50ca57f4c02ce7cf1b60318d1e8072"},
@@ -456,6 +544,10 @@ six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
+spotify-uri = [
+    {file = "spotify_uri-1.0.3-py3-none-any.whl", hash = "sha256:1830e0f74d578c7b30bbc15a016ee7d29233a0461782f27c194cdf1b4fd562a5"},
+    {file = "spotify_uri-1.0.3.tar.gz", hash = "sha256:8140b45c222b4a0dcac4b47e47058cb3c0942853f5cdfe65cbe3b1f87a099024"},
+]
 spotipy = [
     {file = "spotipy-2.19.0-py2-none-any.whl", hash = "sha256:dd6de229351bb6cf4d9bc169c5e183288da795f5a8265968dd98e95c037f9e7a"},
     {file = "spotipy-2.19.0-py3-none-any.whl", hash = "sha256:766f9ef96d61851d7884c4553f2de2527c3af01df603985f6987543bb28e3ff5"},
@@ -469,10 +561,22 @@ tomli = [
     {file = "tomli-1.2.1-py3-none-any.whl", hash = "sha256:8dd0e9524d6f386271a36b41dbf6c57d8e32fd96fd22b6584679dc569d20899f"},
     {file = "tomli-1.2.1.tar.gz", hash = "sha256:a5b75cb6f3968abb47af1b40c1819dc519ea82bcc065776a866e8d74c5ca9442"},
 ]
+types-dateparser = [
+    {file = "types-dateparser-1.0.7.tar.gz", hash = "sha256:175f33965829f8393f0235799a71b2d102643c85e9cc704afe37b820b7062e96"},
+    {file = "types_dateparser-1.0.7-py3-none-any.whl", hash = "sha256:9169705a0d05286cc9f2c5b3bea9ef5c541f898199f30707657d4749df40ad3c"},
+]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},
     {file = "typing_extensions-3.10.0.2-py3-none-any.whl", hash = "sha256:f1d25edafde516b146ecd0613dabcc61409817af4766fbbcfb8d1ad4ec441a34"},
     {file = "typing_extensions-3.10.0.2.tar.gz", hash = "sha256:49f75d16ff11f1cd258e1b988ccff82a3ca5570217d7ad8c5f48205dd99a677e"},
+]
+tzdata = [
+    {file = "tzdata-2021.2.post0-py2.py3-none-any.whl", hash = "sha256:a843aabf67dea3dc6bbbc8853e1aee6563e74bcfe920e11a571a389155db1401"},
+    {file = "tzdata-2021.2.post0.tar.gz", hash = "sha256:99d30a01967bb8d7868c03dc924862b1ae8a0e649a322a1107bacc1723c430b9"},
+]
+tzlocal = [
+    {file = "tzlocal-3.0-py3-none-any.whl", hash = "sha256:c736f2540713deb5938d789ca7c3fc25391e9a20803f05b60ec64987cf086559"},
+    {file = "tzlocal-3.0.tar.gz", hash = "sha256:f4e6e36db50499e0d92f79b67361041f048e2609d166e93456b50746dc4aef12"},
 ]
 untokenize = [
     {file = "untokenize-0.1.1.tar.gz", hash = "sha256:3865dbbbb8efb4bb5eaa72f1be7f3e0be00ea8b7f125c69cbd1f5fda926f37a2"},

@@ -1,6 +1,6 @@
 [tool.pylint.master]
 disable="""
-C0114,C0115,C0116,C0330,C0326,W0703,W0105,R1705,R0901,R0902,R0903,R0904,R0911,R0912,R0913,R0914,
+C0103,C0114,C0115,C0116,C0330,C0326,W0703,W0105,R1705,R0901,R0902,R0903,R0904,R0911,R0912,R0913,R0914,
 R0915,R0916,R1702,C0206,R0801"""
 
 [tool.isort]
@@ -13,6 +13,13 @@ line-length = 100
 
 [tool.mypy]
 show_column_numbers = true
+
+[[tool.mypy.overrides]]
+module = [
+    "spotipy.*",
+    "spotify_uri.*"
+]
+ignore_missing_imports = true
 
 [tool.poetry]
 name = "spy-collage"
@@ -28,6 +35,8 @@ spy-collage = "spy_collage.cli:cli"
 python = "^3.10"
 click = "^8.0.3"
 spotipy = "^2.19.0"
+dateparser = "^1.1.0"
+spotify-uri = "^1.0.3"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
@@ -35,6 +44,7 @@ isort = "^5.9.3"
 mypy = "^0.910"
 pylint = "^2.11.1"
 docformatter = "^1.4"
+types-dateparser = "^1.0.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
