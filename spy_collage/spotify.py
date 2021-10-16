@@ -6,6 +6,8 @@ import spotify_uri
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 
+from spy_collage.config import Config
+
 __discovery_cache: dict[str, list[dict]] = {}
 
 
@@ -27,7 +29,7 @@ def get_sp(credentials_path="spotify_credentials.ini") -> Spotify:
     client_id, client_secret = __read_credentials(credentials_path)
     environ["SPOTIPY_CLIENT_ID"] = client_id
     environ["SPOTIPY_CLIENT_SECRET"] = client_secret
-    spotify = Spotify(client_credentials_manager=SpotifyClientCredentials())
+    spotify = Spotify(client_credentials_manager=SpotifyClientCredentials(), requests_timeout=15)
     return spotify
 
 
@@ -54,6 +56,7 @@ def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
     ):
         return track["album"], False
 
+    user_market = Config.get("market")
     track_album_release_date = dateparser.parse(track["album"]["release_date"])
     assert track_album_release_date is not None
 
@@ -69,6 +72,10 @@ def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
         assert album_release_date is not None
         if album_release_date < track_album_release_date:
             continue
+        if user_market and user_market not in album["available_markets"]:
+            continue
+        if len(album["artists"]) > 1:
+            continue  # this is likely a compilation album (e.g. Ophelia Vol 2 by Seven Lions)
 
         if album["uri"] in __discovery_cache:
             album_tracks = __discovery_cache[album["uri"]]
@@ -85,9 +92,9 @@ def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
 
 def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True) -> list[dict]:
     albums = []
+    tracks = []
     for uri in uris:
         parsed = spotify_uri.parse(uri)
-        tracks = []
         if parsed.type == "album":
             albums.append(sp.album(uri))
         elif parsed.type == "playlist":
@@ -98,12 +105,19 @@ def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True)
         elif parsed.type == "track":
             tracks.append(sp.track(uri))
 
-        for i, t in enumerate(tracks):
-            print(f"Processing track {i+1}/{len(tracks)}")
-            if discovery_enabled:
-                album, _ = discover_album(sp, t)
-            else:
-                album = t["album"]
-            albums.append(album)
+    for i, t in enumerate(tracks):
+        print(f"Processing track {i+1}/{len(tracks)}", end="\r")
+        if discovery_enabled:
+            album, discovered = discover_album(sp, t)
+            if discovered:
+                print(
+                    f"    * Discovered album {album['name']} for {t['artists'][0]['name']} -"
+                    f" {t['album']['name']}"
+                )
+        else:
+            album = t["album"]
+        albums.append(album)
+    if tracks:
+        print()
 
     return albums

@@ -5,6 +5,7 @@ from pathlib import Path
 import click
 import spotify_uri
 
+from spy_collage.config import Config
 from spy_collage.spotify import collect_albums, get_sp
 
 
@@ -69,6 +70,7 @@ class AlbumSourceParam(click.ParamType):
 
 
 @click.command()
+@click.pass_context
 @click.option(
     "-s",
     "--source",
@@ -79,10 +81,18 @@ class AlbumSourceParam(click.ParamType):
         " to generate the collage from"
     ),
 )
-def cli(source: AlbumSource):
+@click.option(
+    "--market",
+    default="US",
+    show_default=True,
+    type=str,
+    help="When discovering albums, only consider those available in this market",
+)
+def cli(ctx, **_kwargs):
     """Configurable Python album art collage generator for Spotify, featuring album discovery and
     color clustering."""
+    Config.init(ctx)
     sp = get_sp()
-    albums = source.albums(sp)
+    albums = Config.get("source").albums(sp)
     for album in albums:
         print(f"{album['artists'][0]['name']} - {album['name']}")
