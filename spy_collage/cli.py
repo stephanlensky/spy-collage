@@ -188,18 +188,24 @@ def cli(ctx, **_kwargs):
             download_cover(album, cover_path)
     print()
 
-    features = {}
+    features_json = {}
     if Config.get("feature_cache"):
         print("Using cached features")
-        features = json.load(Config.get("feature_cache"))
+        features_json = json.load(Config.get("feature_cache"))
     else:
         for i, a in enumerate(album_cover_paths):
             print(f"Getting features for art {i+1}/{len(album_cover_paths)}", end="\r")
-            features[str(a)] = collage.get_features(a)
+            features_json[str(a)] = collage.get_features(a)
         print()
 
     if Config.get("save_feature_cache"):
         with open(".features_cache", "w", encoding="utf-8") as of:
-            json.dump(features, of)
+            json.dump(features_json, of)
 
-    collage.get_clusters(list(features.values()), 3)
+    features_to_path = {tuple(features): image for image, features in features_json.items()}
+    features = list(features_to_path.keys())
+
+    clusters = collage.get_clusters(features, 3)
+    collage.sort_features_by_distance(features, clusters[0])
+
+    collage.row_collage(features, features_to_path)
