@@ -1,7 +1,9 @@
 import configparser
 from os import environ
+from pathlib import Path
 
 import dateparser
+import requests
 import spotify_uri
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -46,8 +48,8 @@ def __is_duplicate_track(t1: dict, t2: dict) -> bool:
 
 def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
     """
-    If the supplied track is a single release, attempts to locate a full album release that contains
-    the track.
+    If the supplied track is a single release, attempts to locate a full album release that
+    contains the track.
 
     If one cannot be found, returns the album of the given track as-is.
     """
@@ -121,3 +123,22 @@ def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True)
         print()
 
     return albums
+
+
+def download_cover(album: dict, path: Path):
+    from spy_collage.cli import AlbumCoverResolution  # pylint: disable=import-outside-toplevel
+
+    size = Config.get("album_cover_resolution")
+
+    images = album["images"]
+    images.sort(key=lambda i: i["width"])
+    if size == AlbumCoverResolution.small:
+        url = images[0]["url"]
+    elif size == AlbumCoverResolution.medium:
+        url = images[int(len(images) / 2)]["url"]
+    else:
+        url = images[-1]["url"]
+
+    r = requests.get(url)
+    with open(path, "wb") as of:
+        of.write(r.content)

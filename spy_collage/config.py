@@ -11,3 +11,7 @@ class Config:
     @staticmethod
     def get(key):
         return Config.__config[key]
+
+    @staticmethod
+    def set(key, value):
+        Config.__config[key] = value

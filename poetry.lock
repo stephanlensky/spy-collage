@@ -307,6 +307,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-requests"
+version = "2.25.11"
+description = "Typing stubs for requests"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "3.10.0.2"
 description = "Backported and Experimental Type Hints for Python 3.5+"
@@ -368,7 +376,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "b7e6fdd10ffcffae3e15a9bebc2df2b40875b7568fa873ef6abaffd538f63ce9"
+content-hash = "acc55197002f5b77d074b3c4f7eb31c0fa1b1cf50ba13425ea8737a423a39c7d"
 
 [metadata.files]
 astroid = [
@@ -564,6 +572,10 @@ tomli = [
 types-dateparser = [
     {file = "types-dateparser-1.0.7.tar.gz", hash = "sha256:175f33965829f8393f0235799a71b2d102643c85e9cc704afe37b820b7062e96"},
     {file = "types_dateparser-1.0.7-py3-none-any.whl", hash = "sha256:9169705a0d05286cc9f2c5b3bea9ef5c541f898199f30707657d4749df40ad3c"},
+]
+types-requests = [
+    {file = "types-requests-2.25.11.tar.gz", hash = "sha256:b279284e51f668e38ee12d9665e4d789089f532dc2a0be4a1508ca0efd98ba9e"},
+    {file = "types_requests-2.25.11-py3-none-any.whl", hash = "sha256:ba1d108d512e294b6080c37f6ae7cb2a2abf527560e2b671d1786c1fc46b541a"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},

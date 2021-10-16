@@ -37,6 +37,7 @@ click = "^8.0.3"
 spotipy = "^2.19.0"
 dateparser = "^1.1.0"
 spotify-uri = "^1.0.3"
+requests = "^2.26.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
@@ -45,6 +46,7 @@ mypy = "^0.910"
 pylint = "^2.11.1"
 docformatter = "^1.4"
 types-dateparser = "^1.0.7"
+types-requests = "^2.25.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
