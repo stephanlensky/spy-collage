@@ -46,8 +46,8 @@ def __is_duplicate_track(t1: dict, t2: dict) -> bool:
 
 def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
     """
-    If the supplied track URI is a single release, attempts to locate a full album release that
-    contains the track.
+    If the supplied track is a single release, attempts to locate a full album release that contains
+    the track.
 
     If one cannot be found, returns the album of the given track as-is.
     """
