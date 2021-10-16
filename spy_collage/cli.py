@@ -205,7 +205,10 @@ def cli(ctx, **_kwargs):
     features_to_path = {tuple(features): image for image, features in features_json.items()}
     features = list(features_to_path.keys())
 
-    clusters = collage.get_clusters(features, 3)
-    collage.sort_features_by_distance(features, clusters[0])
+    clusters, centroids = collage.get_clusters(features, 4)
+    for cluster, centroid in zip(clusters, centroids):
+        collage.sort_features_by_distance(cluster, centroid)
 
-    collage.row_collage(features, features_to_path)
+    collage_centroids = [(0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)]
+
+    collage.naive_spiral_collage(features, clusters, collage_centroids, features_to_path)
