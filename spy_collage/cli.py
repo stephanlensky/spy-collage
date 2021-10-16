@@ -14,7 +14,7 @@ class AlbumSource:
     source_uris: list[str]
 
     def albums(self, sp) -> list[dict]:
-        return collect_albums(sp, self.source_uris)
+        return collect_albums(sp, self.source_uris, discovery_enabled=Config.get("discover"))
 
 
 class AlbumSourceParam(click.ParamType):
@@ -80,6 +80,12 @@ class AlbumSourceParam(click.ParamType):
         "A playlist URI, list of comma-separated playlist URIs, or file containing a list of URIs"
         " to generate the collage from"
     ),
+)
+@click.option(
+    "--discover/--no-discover",
+    default=True,
+    show_default=True,
+    help="Enable/disable automatic album discovery for singles",
 )
 @click.option(
     "--market",
