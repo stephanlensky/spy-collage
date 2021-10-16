@@ -1,5 +1,7 @@
 # cache
 album*
+.albums_cache
+.features_cache
 
 # secrets
 spotify_credentials.ini

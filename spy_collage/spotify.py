@@ -95,7 +95,8 @@ def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
 def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True) -> list[dict]:
     albums = []
     tracks = []
-    for uri in uris:
+    for i, uri in enumerate(uris):
+        print(f"Processing input {i+1}/{len(uris)}", end="\r")
         parsed = spotify_uri.parse(uri)
         if parsed.type == "album":
             albums.append(sp.album(uri))
@@ -106,6 +107,7 @@ def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True)
                 tracks.append(t["track"])
         elif parsed.type == "track":
             tracks.append(sp.track(uri))
+    print()
 
     for i, t in enumerate(tracks):
         print(f"Processing track {i+1}/{len(tracks)}", end="\r")
