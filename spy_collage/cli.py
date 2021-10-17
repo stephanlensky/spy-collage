@@ -204,7 +204,7 @@ def cli(ctx, **_kwargs):
         with open(".features_cache", "w", encoding="utf-8") as of:
             json.dump([f.to_dict() for f in features], of)
 
-    collage.lap_collage(features[:400], (20, 20))
+    collage.lap_collage(features[:400], (10, 20))
 
     # clusters, centroids = collage.get_clusters(features, 4)
     # for cluster, centroid in zip(clusters, centroids):

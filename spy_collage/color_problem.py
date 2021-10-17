@@ -160,10 +160,10 @@ def solve_colors(
     key_points: Sequence[KeyObject],
 ):
     key_points = list(key_points)
-    if colors.matrix.shape[0] != shape[0] * shape[1]:
+    if colors.matrix.shape[0] < shape[0] * shape[1]:
         raise ValueError(
             f"Expected colors (shape {colors.matrix.shape} ) to have a first dimension of size"
-            f" equal to the number of positions in the grid ({shape[0]} x {shape[1]} ="
+            f" greater than or equal to the number of positions in the grid ({shape[0]} x {shape[1]} ="
             f" {shape[0] * shape[1]})"
         )
     if len(key_points) < 1:
