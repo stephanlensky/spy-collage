@@ -151,6 +151,18 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     width, height = shape
     color_matrix = ColorMatrix(np.asarray([f.features for f in features]), ColorSpace.CIELAB)
 
+    def mkline(x1, y1, x2, y2, r, g, b):
+        return KeyLine(
+            int(x1 * width),
+            int(y1 * height),
+            int(x2 * width),
+            int(y2 * height),
+            np.array([r, g, b]),
+        )
+
+    def mkpoint(x, y, r, g, b):
+        return KeyPoint(int(x * width), int(y * height), np.array([r, g, b]))
+
     # key_points = [
     #     KeyPoint(0, 0, np.array([255, 0, 0])),
     #     KeyPoint(int(1 * width), int(1 * height), np.array([255, 0, 255])),
@@ -167,9 +179,11 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     # ]
     # key_points = [KeyPoint(int(0.5 * width), int(0.5 * height), np.array([255, 255, 255]))]
     key_points = [
-        KeyPoint(int(0 * width), int(0.5 * height), np.array([255, 0, 0])),
-        KeyPoint(int(0.5 * width), int(0.5 * height), np.array([0, 255, 0])),
-        KeyPoint(int(1 * width), int(0.5 * height), np.array([0, 0, 255])),
+        mkpoint(0, 0.5, 255, 0, 0),
+        mkpoint(0.5, 0.5, 0, 255, 0),
+        mkpoint(1, 0.5, 0, 0, 255),
+        mkline(0, 0, 1, 0, 255, 255, 255),
+        mkline(0, 1, 1, 1, 255, 255, 255),
     ]
     # key_points = [
     #     KeyLine(
