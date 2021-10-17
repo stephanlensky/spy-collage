@@ -86,6 +86,43 @@ class KeyPoint(KeyObject):
         return math.dist([x, y], [self.x, self.y])
 
 
+class KeyLine(KeyObject):
+    def __init__(
+        self,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        color: np.ndarray,
+        color_space: ColorSpace = ColorSpace.RGB,
+    ) -> None:
+        super().__init__(color, color_space)
+        self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+
+    def distanceFrom(self, x: int, y: int) -> Any:
+        px = self.x2 - self.x1
+        py = self.y2 - self.y1
+
+        norm = px * px + py * py
+
+        u = ((x - self.x1) * px + (y - self.y1) * py) / float(norm)
+
+        if u > 1:
+            u = 1
+        elif u < 0:
+            u = 0
+
+        x3 = self.x1 + u * px
+        y3 = self.y1 + u * py
+
+        dx = x3 - x
+        dy = y3 - y
+
+        dist = (dx * dx + dy * dy) ** 0.5
+
+        return dist
+
+
 def create_coordinate_distance_matrix(
     width: int, height: int, key_points: list[KeyObject]
 ) -> np.ndarray:
