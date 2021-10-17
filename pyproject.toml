@@ -1,6 +1,6 @@
 [tool.pylint.master]
 disable="""
-C0103,C0114,C0115,C0116,C0330,C0326,W0703,W0105,R1705,R0901,R0902,R0903,R0904,R0911,R0912,R0913,R0914,
+C0103,C0114,C0115,C0116,C0200,C0330,C0326,W0703,W0105,R1705,R0901,R0902,R0903,R0904,R0911,R0912,R0913,R0914,
 R0915,R0916,R1702,C0206,R0801"""
 
 [tool.isort]
@@ -22,6 +22,8 @@ module = [
     "sklearn.*",
     "scipy.*",
     "PIL.*",
+    "skimage.*",
+    "einops.*",
 ]
 ignore_missing_imports = true
 
@@ -45,6 +47,8 @@ requests = "^2.26.0"
 "colorgram.py" = "^1.2.0"
 scikit-learn = "^1.0"
 Pillow = "^8.4.0"
+scikit-image = "^0.18.3"
+einops = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
