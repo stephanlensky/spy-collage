@@ -2,7 +2,7 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 from einops import rearrange
@@ -120,8 +120,9 @@ def solve_colors(
     shape: tuple[int, int],
     colors: ColorMatrix,
     distance_space: ColorSpace,
-    key_points: list[KeyObject],
+    key_points: Sequence[KeyObject],
 ):
+    key_points = list(key_points)
     if colors.matrix.shape[0] != shape[0] * shape[1]:
         raise ValueError(
             f"Expected colors (shape {colors.matrix.shape} ) to have a first dimension of size"

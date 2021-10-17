@@ -139,7 +139,7 @@ class AlbumSourceParam(click.ParamType):
     help="Resolution to download album covers at",
 )
 @click.option(
-    "-cd",
+    "-ad",
     "--album-cover-dir",
     "album_cover_dir",
     type=click.Path(),
@@ -188,27 +188,28 @@ def cli(ctx, **_kwargs):
             download_cover(album, cover_path)
     print()
 
-    features_json = {}
+    features = []
     if Config.get("feature_cache"):
         print("Using cached features")
         features_json = json.load(Config.get("feature_cache"))
+        for f in features_json:
+            features.append(collage.ImageFeatures.from_dict(f))
     else:
         for i, a in enumerate(album_cover_paths):
             print(f"Getting features for art {i+1}/{len(album_cover_paths)}", end="\r")
-            features_json[str(a)] = collage.get_features(a)
+            features.append(collage.get_features(a))
         print()
 
     if Config.get("save_feature_cache"):
         with open(".features_cache", "w", encoding="utf-8") as of:
-            json.dump(features_json, of)
+            json.dump([f.to_dict() for f in features], of)
 
-    features_to_path = {tuple(features): image for image, features in features_json.items()}
-    features = list(features_to_path.keys())
+    collage.lap_collage(features[:400], (20, 20))
 
-    clusters, centroids = collage.get_clusters(features, 4)
-    for cluster, centroid in zip(clusters, centroids):
-        collage.sort_features_by_distance(cluster, centroid)
+    # clusters, centroids = collage.get_clusters(features, 4)
+    # for cluster, centroid in zip(clusters, centroids):
+    #     collage.sort_features_by_distance(cluster, centroid)
 
-    collage_centroids = [(0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)]
+    # collage_centroids = [(0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)]
 
-    collage.naive_spiral_collage(features, clusters, collage_centroids, features_to_path)
+    # collage.naive_spiral_collage(features, clusters, collage_centroids, features_to_path)

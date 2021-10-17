@@ -1,17 +1,47 @@
 import math
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
 
 import colorgram
+import numpy as np
 import sklearn.cluster
 from PIL import Image
 from scipy.spatial import distance
+from skimage import color as spaces
+
+from spy_collage.color_problem import ColorMatrix, ColorSpace, KeyPoint, solve_colors
 
 
-def get_features(image_path):
-    colors = colorgram.extract(image_path, 2)
+@dataclass
+class ImageFeatures:
+    features: np.ndarray
+    image_path: Path
+    __image: Optional[Image.Image]
+
+    @property
+    def image(self):
+        if self.__image is None:
+            self.__image = Image.open(self.image_path)
+        return self.__image
+
+    def to_dict(self):
+        return {"features": list(self.features), "image_path": str(self.image_path)}
+
+    @staticmethod
+    def from_dict(d: dict):
+        return ImageFeatures(np.asarray(d["features"]), Path(d["image_path"]), None)
+
+
+def get_features(image_path) -> ImageFeatures:
+    colors: list[colorgram.Color] = colorgram.extract(image_path, 1)
     features = []
     for c in colors:
-        features.extend(c.rgb)
-    return tuple(features)
+        rgb = list(c.rgb)
+        lab = spaces.rgb2lab(rgb)
+        # hsl[0] *= 3
+        features.extend(lab)
+    return ImageFeatures(np.asarray(features), image_path, None)
 
 
 def get_clusters(features, n):
@@ -113,5 +143,25 @@ def naive_spiral_collage(
                 placement = next(spirals[centroids[i]])
             free_arr[placement[1]][placement[0]] = False
             collage.paste(img, (placement[0] * cover_res, placement[1] * cover_res))
+
+    collage.show()
+
+
+def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
+    width, height = shape
+    color_matrix = ColorMatrix(np.asarray([f.features for f in features]), ColorSpace.CIELAB)
+
+    key_points = [
+        KeyPoint(0, 0, np.array([255, 0, 0])),
+        KeyPoint(int(0.7 * width), int(0.25 * height), np.array([0, 255, 0])),
+    ]
+
+    _, positions = solve_colors(shape, color_matrix, ColorSpace.CIELAB, key_points)
+
+    cover_res = features[0].image.width
+    collage = Image.new("RGB", (width * cover_res, height * cover_res), "white")
+    for i in range(height):
+        for j in range(width):
+            collage.paste(features[positions[i * height + j]].image, (j * cover_res, i * cover_res))
 
     collage.show()
