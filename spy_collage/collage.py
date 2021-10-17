@@ -10,7 +10,7 @@ from PIL import Image
 from scipy.spatial import distance
 from skimage import color as spaces
 
-from spy_collage.color_problem import ColorMatrix, ColorSpace, KeyPoint, solve_colors
+from spy_collage.color_problem import ColorMatrix, ColorSpace, KeyLine, KeyPoint, solve_colors
 
 
 @dataclass
@@ -151,10 +151,49 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     width, height = shape
     color_matrix = ColorMatrix(np.asarray([f.features for f in features]), ColorSpace.CIELAB)
 
+    # key_points = [
+    #     KeyPoint(0, 0, np.array([255, 0, 0])),
+    #     KeyPoint(int(1 * width), int(1 * height), np.array([255, 0, 255])),
+    #     KeyPoint(int(0.5 * width), int(0.5 * height), np.array([0, 255, 0])),
+    # ]
+    # key_points = [
+    #     KeyLine(
+    #         int(0.5 * width),
+    #         int(0.25 * height),
+    #         int(0.55 * width),
+    #         int(0.75 * height),
+    #         np.array([255, 0, 255]),
+    #     )
+    # ]
+    # key_points = [KeyPoint(int(0.5 * width), int(0.5 * height), np.array([255, 255, 255]))]
     key_points = [
-        KeyPoint(0, 0, np.array([255, 0, 0])),
-        KeyPoint(int(0.7 * width), int(0.25 * height), np.array([0, 255, 0])),
+        KeyPoint(int(0 * width), int(0.5 * height), np.array([255, 0, 0])),
+        KeyPoint(int(0.5 * width), int(0.5 * height), np.array([0, 255, 0])),
+        KeyPoint(int(1 * width), int(0.5 * height), np.array([0, 0, 255])),
     ]
+    # key_points = [
+    #     KeyLine(
+    #         int(0 * width),
+    #         int(0 * height),
+    #         int(0 * width),
+    #         int(1 * height),
+    #         np.array([255, 0, 0]),
+    #     ),
+    #     KeyLine(
+    #         int(0.5 * width),
+    #         int(0 * height),
+    #         int(0.5 * width),
+    #         int(1 * height),
+    #         np.array([0, 255, 0]),
+    #     ),
+    #     KeyLine(
+    #         int(1 * width),
+    #         int(0 * height),
+    #         int(1 * width),
+    #         int(1 * height),
+    #         np.array([0, 0, 255]),
+    #     ),
+    # ]
 
     _, positions = solve_colors(shape, color_matrix, ColorSpace.CIELAB, key_points)
 
@@ -162,6 +201,6 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     collage = Image.new("RGB", (width * cover_res, height * cover_res), "white")
     for i in range(height):
         for j in range(width):
-            collage.paste(features[positions[i * height + j]].image, (j * cover_res, i * cover_res))
+            collage.paste(features[positions[j * height + i]].image, (j * cover_res, i * cover_res))
 
     collage.show()
