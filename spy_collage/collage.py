@@ -1,4 +1,5 @@
 import math
+from colorsys import hsv_to_rgb
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -163,6 +164,22 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     def mkpoint(x, y, r, g, b):
         return KeyPoint(int(x * width), int(y * height), np.array([r, g, b]))
 
+    def mkspectrum(x1, y1, x2, y2, h1, h2, n) -> list[KeyPoint]:
+        def rgb_norm(c):
+            return [int(v * 255) for v in c]
+
+        if n < 2:
+            raise ValueError("n must be > 1")
+        kp: list[KeyPoint] = [mkpoint(x1, y1, *rgb_norm(hsv_to_rgb(h1, 1, 1)))]
+        x, y, h = x1, y1, h1
+        dx = (x2 - x1) / (n - 1)
+        dy = (y2 - y1) / (n - 1)
+        dh = (h2 - h1) / (n - 1)
+        for _ in range(n - 1):
+            x, y, h = x + dx, y + dy, h + dh
+            kp.append(mkpoint(x, y, *rgb_norm(hsv_to_rgb(h, 1, 1))))
+        return kp
+
     # key_points = [
     #     KeyPoint(0, 0, np.array([255, 0, 0])),
     #     KeyPoint(int(1 * width), int(1 * height), np.array([255, 0, 255])),
@@ -178,13 +195,13 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     #     )
     # ]
     # key_points = [KeyPoint(int(0.5 * width), int(0.5 * height), np.array([255, 255, 255]))]
-    key_points = [
-        mkpoint(0, 0.5, 255, 0, 0),
-        mkpoint(0.5, 0.5, 0, 255, 0),
-        mkpoint(1, 0.5, 0, 0, 255),
-        mkline(0, 0, 1, 0, 255, 255, 255),
-        mkline(0, 1, 1, 1, 255, 255, 255),
-    ]
+    # key_points = [
+    #     mkpoint(0, 0.5, 255, 0, 0),
+    #     mkpoint(0.5, 0.5, 0, 255, 0),
+    #     mkpoint(1, 0.5, 0, 0, 255),
+    #     mkline(0, 0, 1, 0, 255, 255, 255),
+    #     mkline(0, 1, 1, 1, 255, 255, 255),
+    # ]
     # key_points = [
     #     KeyLine(
     #         int(0 * width),
@@ -207,6 +224,14 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     #         int(1 * height),
     #         np.array([0, 0, 255]),
     #     ),
+    # ]
+    key_points = [
+        *mkspectrum(0, 0.5, 1, 0.5, 0, 1, n=10),
+        mkline(0, 0, 1, 0, 255, 255, 255),
+        mkline(0, 1, 1, 1, 255, 255, 255),
+    ]
+    # key_points = [
+    #     *mkspectrum(0, 0, 1, 1, 0, 1, n=10),
     # ]
 
     _, positions = solve_colors(shape, color_matrix, ColorSpace.CIELAB, key_points)

@@ -81,9 +81,14 @@ class KeyPoint(KeyObject):
         super().__init__(color, color_space)
         self.x = x
         self.y = y
+        self.__original_color = color
+        self.__original_space = color_space
 
     def distanceFrom(self, x: int, y: int) -> Any:
         return math.dist([x, y], [self.x, self.y])
+
+    def __repr__(self) -> str:
+        return f"KeyPoint({self.x}, {self.y}, {self.__original_color}, {self.__original_space})"
 
 
 class KeyLine(KeyObject):
