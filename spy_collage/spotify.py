@@ -6,12 +6,12 @@ from typing import Optional
 
 import dateparser
 import requests
+import spotify
 import spotify_uri
 import typer
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 
-import spy_collage.spotify as spotify
 from spy_collage.async_utils import run_until_complete_with_progress
 from spy_collage.cli import format_error
 from spy_collage.models import AlbumCoverResolution
