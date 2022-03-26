@@ -8,7 +8,7 @@ import spotify_uri
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from spy_collage.config import Config
+from spy_collage.models import AlbumCoverResolution
 
 __discovery_cache: dict[str, list[dict]] = {}
 
@@ -46,7 +46,7 @@ def __is_duplicate_track(t1: dict, t2: dict) -> bool:
     return matching_name and matching_artists and matching_duration
 
 
-def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
+def discover_album(sp: Spotify, track: dict, user_market: str) -> tuple[dict, bool]:
     """
     If the supplied track is a single release, attempts to locate a full album release that
     contains the track.
@@ -57,8 +57,6 @@ def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
         "album_group" not in track["album"] or track["album"]["album_group"] == "album"
     ):
         return track["album"], False
-
-    user_market = Config.get("market")
     track_album_release_date = dateparser.parse(track["album"]["release_date"])
     assert track_album_release_date is not None
 
@@ -92,7 +90,11 @@ def discover_album(sp: Spotify, track: dict) -> tuple[dict, bool]:
     return track["album"], False
 
 
-def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True) -> list[dict]:
+def collect_albums(
+    uris: list[str], discovery_enabled: bool = True, user_market: str = "US"
+) -> list[dict]:
+    sp = get_sp()
+
     albums = []
     tracks = []
     for i, uri in enumerate(uris):
@@ -112,7 +114,7 @@ def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True)
     for i, t in enumerate(tracks):
         print(f"Processing track {i+1}/{len(tracks)}", end="\r")
         if discovery_enabled:
-            album, discovered = discover_album(sp, t)
+            album, discovered = discover_album(sp, t, user_market=user_market)
             if discovered:
                 print(
                     f"    * Discovered album {album['name']} for {t['artists'][0]['name']} -"
@@ -127,11 +129,7 @@ def collect_albums(sp: Spotify, uris: list[str], discovery_enabled: bool = True)
     return albums
 
 
-def download_cover(album: dict, path: Path):
-    from spy_collage.cli import AlbumCoverResolution  # pylint: disable=import-outside-toplevel
-
-    size = Config.get("album_cover_resolution")
-
+def download_cover(album: dict, path: Path, size: AlbumCoverResolution):
     images = album["images"]
     images.sort(key=lambda i: i["width"])
     if size == AlbumCoverResolution.small:

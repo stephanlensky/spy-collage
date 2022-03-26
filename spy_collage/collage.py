@@ -228,7 +228,7 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     key_points = [
         *mkspectrum(0, 0.5, 1, 0.5, 0, 1, n=10),
         mkline(0, 0, 1, 0, 255, 255, 255),
-        mkline(0, 1, 1, 1, 255, 255, 255),
+        mkline(0, 1, 1, 1, 0, 0, 0),
     ]
     # key_points = [
     #     *mkspectrum(0, 0, 1, 1, 0, 1, n=10),
