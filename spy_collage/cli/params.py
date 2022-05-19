@@ -15,6 +15,12 @@ class AlbumSource:
     json_albums: Optional[list[dict[str, Any]]] = None
 
 
+@dataclass
+class CollageSize:
+    width: int
+    height: int
+
+
 class AlbumSourceParam(click.ParamType):
     name = "source"
 
@@ -72,3 +78,17 @@ class AlbumSourceParam(click.ParamType):
                 self.fail("source must be one or more playlist URIs or a file")
 
         return AlbumSource(list(uris))
+
+
+class CollageSizeParam(click.ParamType):
+    # pylint: disable=inconsistent-return-statements
+    name = "collage_size"
+
+    def convert(self, value, param=None, ctx=None) -> CollageSize:
+        if isinstance(value, CollageSize):
+            return value
+        try:
+            dims = value.lower().split("x")
+            return CollageSize(width=int(dims[0]), height=int(dims[1]))
+        except (IndexError, ValueError):
+            self.fail("invalid collage size, should be specified as nxm")

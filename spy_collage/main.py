@@ -4,7 +4,8 @@ from pathlib import Path
 import typer
 
 from spy_collage import collage
-from spy_collage.cli.params import AlbumSource, AlbumSourceParam
+from spy_collage.cli import format_error
+from spy_collage.cli.params import AlbumSource, AlbumSourceParam, CollageSize, CollageSizeParam
 from spy_collage.cli.typer_patches import patch_typer_support_custom_types, register_type
 from spy_collage.models import AlbumCoverResolution
 from spy_collage.spotify import collect_albums, download_cover
@@ -15,6 +16,7 @@ FEATURES_CACHE_PATH = Path(".features_cache")
 
 patch_typer_support_custom_types()
 register_type(AlbumSource, lambda v: AlbumSourceParam().convert(v))
+register_type(CollageSize, lambda v: CollageSizeParam().convert(v))
 app = typer.Typer()
 
 
@@ -27,6 +29,9 @@ def main(
             " file containing one of: a list of playlist URIs, a list of album URIs, or a JSON list"
             " of albums collected from the Spotify API."
         ),
+    ),
+    dimensions: CollageSize = typer.Option(
+        ..., "--dimensions", "-d", help="Dimensions of the generated collage, specified as nxm"
     ),
     discover: bool = typer.Option(
         True, help="Enable/disable automatic album discovery for singles"
@@ -47,6 +52,15 @@ def main(
     if not albums:
         albums = collect_albums(source.uris, discovery_enabled=discover, user_market=market)
 
+    if len(albums) != dimensions.width * dimensions.height:
+        typer.echo(
+            format_error(
+                "product of width and height dimensions must be equal to the number of"
+                f" albums provided ({dimensions.width * dimensions.height} != {len(albums)})"
+            )
+        )
+        raise typer.Exit(1)
+
     if save_albums:
         with open("albums.txt", "w", encoding="utf-8") as of:
             of.writelines([a["uri"] + "\n" for a in albums])
@@ -54,7 +68,7 @@ def main(
     ALBUM_DOWNLOAD_PATH.mkdir(exist_ok=True)
     album_cover_paths = []
     for i, album in enumerate(albums):
-        cover_path = ALBUM_DOWNLOAD_PATH / Path(f"{album['id']}.jpg")
+        cover_path = ALBUM_DOWNLOAD_PATH / Path(f"{album['id']}_{album_cover_resolution.value}.jpg")
         album_cover_paths.append(cover_path)
         print(f"Saving cover {i+1}/{len(albums)}", end="\r")
         if not cover_path.exists():
@@ -76,4 +90,4 @@ def main(
     with open(".features_cache", "w", encoding="utf-8") as of:
         json.dump([f.to_dict() for f in features], of)
 
-    collage.lap_collage(features, (12, 9))
+    collage.lap_collage(features, (dimensions.width, dimensions.height))
