@@ -44,7 +44,7 @@ def main(
         ),
     ),
     discover: bool = typer.Option(
-        True, help="Enable/disable automatic album discovery for singles"
+        False, help="Enable/disable automatic album discovery for singles"
     ),
     market: str = typer.Option(
         "US", help="When discovering albums, only consider those available in this market"
