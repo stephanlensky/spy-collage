@@ -88,7 +88,11 @@ def main(
     print()
 
     features = []
-    if FEATURES_CACHE_PATH.exists():
+
+    # this feature does not work properly right now with changing sources across multiple runs
+    # disable for now
+    if False:  # pylint: disable=using-constant-test
+        # if FEATURES_CACHE_PATH.exists():
         print("Using cached features")
         features_json = json.load(FEATURES_CACHE_PATH.open(encoding="utf-8"))
         for f in features_json:
@@ -99,7 +103,7 @@ def main(
             features.append(collage.get_features(a))
         print()
 
-    with open(".features_cache", "w", encoding="utf-8") as of:
-        json.dump([f.to_dict() for f in features], of)
+    # with open(".features_cache", "w", encoding="utf-8") as of:
+    #     json.dump([f.to_dict() for f in features], of)
 
     collage.lap_collage(features, (dimensions.width, dimensions.height), key_objects)
