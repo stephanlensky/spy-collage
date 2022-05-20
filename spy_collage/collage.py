@@ -45,56 +45,6 @@ def lap_collage(
 ):
     width, height = shape
     color_matrix = ColorMatrix(np.asarray([f.features for f in features]), ColorSpace.CIELAB)
-
-    # key_points = [
-    #     KeyPoint(0, 0, np.array([255, 0, 0])),
-    #     KeyPoint(int(1 * width), int(1 * height), np.array([255, 0, 255])),
-    #     KeyPoint(int(0.5 * width), int(0.5 * height), np.array([0, 255, 0])),
-    # ]
-    # key_points = [
-    #     KeyLine(
-    #         int(0.5 * width),
-    #         int(0.25 * height),
-    #         int(0.55 * width),
-    #         int(0.75 * height),
-    #         np.array([255, 0, 255]),
-    #     )
-    # ]
-    # key_points = [KeyPoint(int(0.5 * width), int(0.5 * height), np.array([255, 255, 255]))]
-    # key_points = [
-    #     mkpoint(0, 0.5, 255, 0, 0),
-    #     mkpoint(0.5, 0.5, 0, 255, 0),
-    #     mkpoint(1, 0.5, 0, 0, 255),
-    #     mkline(0, 0, 1, 0, 255, 255, 255),
-    #     mkline(0, 1, 1, 1, 255, 255, 255),
-    # ]
-    # key_points = [
-    #     KeyLine(
-    #         int(0 * width),
-    #         int(0 * height),
-    #         int(0 * width),
-    #         int(1 * height),
-    #         np.array([255, 0, 0]),
-    #     ),
-    #     KeyLine(
-    #         int(0.5 * width),
-    #         int(0 * height),
-    #         int(0.5 * width),
-    #         int(1 * height),
-    #         np.array([0, 255, 0]),
-    #     ),
-    #     KeyLine(
-    #         int(1 * width),
-    #         int(0 * height),
-    #         int(1 * width),
-    #         int(1 * height),
-    #         np.array([0, 0, 255]),
-    #     ),
-    # ]
-    # key_points = [
-    #     *mkspectrum(0, 0, 1, 1, 0, 1, n=10),
-    # ]
-
     _, positions = solve_colors(shape, color_matrix, ColorSpace.CIELAB, key_objects)
 
     cover_res = features[0].image.width
