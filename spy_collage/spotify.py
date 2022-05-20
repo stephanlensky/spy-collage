@@ -1,4 +1,5 @@
 import configparser
+from functools import cache
 from os import environ
 from pathlib import Path
 
@@ -27,10 +28,13 @@ def __collect_all_items(sp: Spotify, results) -> list[dict]:
     return items
 
 
+@cache
 def get_sp(credentials_path="spotify_credentials.ini") -> Spotify:
-    client_id, client_secret = __read_credentials(credentials_path)
-    environ["SPOTIPY_CLIENT_ID"] = client_id
-    environ["SPOTIPY_CLIENT_SECRET"] = client_secret
+    if "SPOTIPY_CLIENT_ID" not in environ or "SPOTIPY_CLIENT_SECRET" not in environ:
+        print("Reading Spotify credentials from spotify_credentials.ini...")
+        client_id, client_secret = __read_credentials(credentials_path)
+        environ["SPOTIPY_CLIENT_ID"] = client_id
+        environ["SPOTIPY_CLIENT_SECRET"] = client_secret
     spotify = Spotify(client_credentials_manager=SpotifyClientCredentials(), requests_timeout=15)
     return spotify
 
