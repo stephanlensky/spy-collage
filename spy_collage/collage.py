@@ -1,4 +1,3 @@
-from colorsys import hsv_to_rgb
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -8,7 +7,7 @@ import numpy as np
 from PIL import Image
 from skimage import color as spaces
 
-from spy_collage.color_problem import ColorMatrix, ColorSpace, KeyLine, KeyPoint, solve_colors
+from spy_collage.color_problem import ColorMatrix, ColorSpace, KeyObject, solve_colors
 
 
 @dataclass
@@ -41,37 +40,11 @@ def get_features(image_path) -> ImageFeatures:
     return ImageFeatures(np.asarray(features), image_path, None)
 
 
-def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
+def lap_collage(
+    features: list[ImageFeatures], shape: tuple[int, int], key_objects: list[KeyObject]
+):
     width, height = shape
     color_matrix = ColorMatrix(np.asarray([f.features for f in features]), ColorSpace.CIELAB)
-
-    def mkline(x1, y1, x2, y2, r, g, b):
-        return KeyLine(
-            int(x1 * width),
-            int(y1 * height),
-            int(x2 * width),
-            int(y2 * height),
-            np.array([r, g, b]),
-        )
-
-    def mkpoint(x, y, r, g, b):
-        return KeyPoint(int(x * width), int(y * height), np.array([r, g, b]))
-
-    def mkspectrum(x1, y1, x2, y2, h1, h2, n) -> list[KeyPoint]:
-        def rgb_norm(c):
-            return [int(v * 255) for v in c]
-
-        if n < 2:
-            raise ValueError("n must be > 1")
-        kp: list[KeyPoint] = [mkpoint(x1, y1, *rgb_norm(hsv_to_rgb(h1, 1, 1)))]
-        x, y, h = x1, y1, h1
-        dx = (x2 - x1) / (n - 1)
-        dy = (y2 - y1) / (n - 1)
-        dh = (h2 - h1) / (n - 1)
-        for _ in range(n - 1):
-            x, y, h = x + dx, y + dy, h + dh
-            kp.append(mkpoint(x, y, *rgb_norm(hsv_to_rgb(h, 1, 1))))
-        return kp
 
     # key_points = [
     #     KeyPoint(0, 0, np.array([255, 0, 0])),
@@ -118,16 +91,11 @@ def lap_collage(features: list[ImageFeatures], shape: tuple[int, int]):
     #         np.array([0, 0, 255]),
     #     ),
     # ]
-    key_points = [
-        *mkspectrum(0, 0.5, 1, 0.5, 0, 1, n=10),
-        mkline(0, 0, 1, 0, 255, 255, 255),
-        mkline(0, 1, 1, 1, 0, 0, 0),
-    ]
     # key_points = [
     #     *mkspectrum(0, 0, 1, 1, 0, 1, n=10),
     # ]
 
-    _, positions = solve_colors(shape, color_matrix, ColorSpace.CIELAB, key_points)
+    _, positions = solve_colors(shape, color_matrix, ColorSpace.CIELAB, key_objects)
 
     cover_res = features[0].image.width
     collage = Image.new("RGB", (width * cover_res, height * cover_res), "white")

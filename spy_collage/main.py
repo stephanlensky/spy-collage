@@ -8,6 +8,7 @@ from spy_collage.cli import format_error
 from spy_collage.cli.params import AlbumSource, AlbumSourceParam, CollageSize, CollageSizeParam
 from spy_collage.cli.typer_patches import patch_typer_support_custom_types, register_type
 from spy_collage.models import AlbumCoverResolution
+from spy_collage.presets import load_preset
 from spy_collage.spotify import collect_albums, download_cover
 
 ALBUM_DOWNLOAD_PATH = Path("albums")
@@ -32,6 +33,15 @@ def main(
     ),
     dimensions: CollageSize = typer.Option(
         ..., "--dimensions", "-d", help="Dimensions of the generated collage, specified as nxm"
+    ),
+    preset: str = typer.Option(
+        ...,
+        "--preset",
+        "-p",
+        help=(
+            "Color arrangement preset to use for generating the collage. Available presets are"
+            " defined in presets.ini."
+        ),
     ),
     discover: bool = typer.Option(
         True, help="Enable/disable automatic album discovery for singles"
@@ -59,7 +69,9 @@ def main(
                 f" albums provided ({dimensions.width * dimensions.height} != {len(albums)})"
             )
         )
-        raise typer.Exit(1)
+        raise typer.Abort()
+
+    key_objects = load_preset(preset, dimensions.width, dimensions.height)
 
     if save_albums:
         with open("albums.txt", "w", encoding="utf-8") as of:
@@ -90,4 +102,4 @@ def main(
     with open(".features_cache", "w", encoding="utf-8") as of:
         json.dump([f.to_dict() for f in features], of)
 
-    collage.lap_collage(features, (dimensions.width, dimensions.height))
+    collage.lap_collage(features, (dimensions.width, dimensions.height), key_objects)

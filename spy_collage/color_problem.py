@@ -1,5 +1,6 @@
 import math
 from abc import ABC, abstractmethod
+from colorsys import hsv_to_rgb
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Sequence
@@ -128,6 +129,39 @@ class KeyLine(KeyObject):
         return dist
 
 
+def mkline(x1, y1, x2, y2, r, g, b, *, width, height):
+    return KeyLine(
+        int(x1 * width),
+        int(y1 * height),
+        int(x2 * width),
+        int(y2 * height),
+        np.array([r, g, b]),
+    )
+
+
+def mkpoint(x, y, r, g, b, *, width, height):
+    return KeyPoint(int(x * width), int(y * height), np.array([r, g, b]))
+
+
+def mkspectrum(x1, y1, x2, y2, h1, h2, n, *, width, height) -> list[KeyPoint]:
+    def rgb_norm(c):
+        return [int(v * 255) for v in c]
+
+    if n < 2:
+        raise ValueError("n must be > 1")
+    kp: list[KeyPoint] = [
+        mkpoint(x1, y1, *rgb_norm(hsv_to_rgb(h1, 1, 1)), width=width, height=height)
+    ]
+    x, y, h = x1, y1, h1
+    dx = (x2 - x1) / (n - 1)
+    dy = (y2 - y1) / (n - 1)
+    dh = (h2 - h1) / (n - 1)
+    for _ in range(n - 1):
+        x, y, h = x + dx, y + dy, h + dh
+        kp.append(mkpoint(x, y, *rgb_norm(hsv_to_rgb(h, 1, 1)), width=width, height=height))
+    return kp
+
+
 def create_coordinate_distance_matrix(
     width: int, height: int, key_points: list[KeyObject]
 ) -> np.ndarray:
@@ -153,7 +187,7 @@ def create_color_distance_matrix(
 
 
 def create_cost_matrix(color_distances: np.ndarray, space_distances: np.ndarray):
-    color_distances_squared = color_distances ** 2
+    color_distances_squared = color_distances**2
     space_reciprocals = np.reciprocal(np.maximum(space_distances, 1))
     return np.transpose(np.dot(color_distances_squared, np.transpose(space_reciprocals)))
 
