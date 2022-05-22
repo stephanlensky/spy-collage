@@ -2,7 +2,7 @@
 name = "spy-collage"
 version = "0.1.0"
 description = "Configurable Python album art collage generator for Spotify, featuring album discovery and color clustering"
-authors = ["Stephan Lensky <stephanl.public@gmail.com>"]
+authors = ["Stephan Lensky <public@slensky.com>"]
 license = "AGPL-3.0-only"
 
 [tool.poetry.scripts]
