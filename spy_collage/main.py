@@ -4,7 +4,7 @@ from pathlib import Path
 import typer
 
 from spy_collage import collage
-from spy_collage.cli import format_error
+from spy_collage.cli import format_error, format_info
 from spy_collage.cli.params import AlbumSource, AlbumSourceParam, CollageSize, CollageSizeParam
 from spy_collage.cli.typer_patches import patch_typer_support_custom_types, register_type
 from spy_collage.models import AlbumCoverResolution
@@ -62,14 +62,25 @@ def main(
     if not albums:
         albums = collect_albums(source.uris, discovery_enabled=discover, user_market=market)
 
-    if len(albums) != dimensions.width * dimensions.height:
+    if len(albums) < dimensions.width * dimensions.height:
         typer.echo(
             format_error(
-                "product of width and height dimensions must be equal to the number of"
-                f" albums provided ({dimensions.width * dimensions.height} != {len(albums)})"
+                f"product of width and height dimensions ({dimensions.width} x"
+                f" {dimensions.height} = {dimensions.width * dimensions.height}) must be less than"
+                f" the number of albums provided ({len(albums)})"
             )
         )
         raise typer.Abort()
+    if len(albums) > dimensions.width * dimensions.height:
+        typer.echo(
+            format_info(
+                f"more albums were provided ({len(albums)}) than spaces in collage"
+                f" ({dimensions.width} x {dimensions.height} ="
+                f" {dimensions.width * dimensions.height}). Will use the"
+                f" {dimensions.width * dimensions.height} albums that best match the requested"
+                " colors."
+            )
+        )
 
     key_objects = load_preset(preset, dimensions.width, dimensions.height)
 
