@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import List
 
 import typer
 
@@ -49,6 +50,10 @@ def main(
     market: str = typer.Option(
         "US", help="When discovering albums, only consider those available in this market"
     ),
+    dedupe: bool = typer.Option(
+        False,
+        help="Experimental: When fetching album art, skip albums whose art is identical to an already-fetched album",
+    ),
     save_albums: bool = typer.Option(
         False, "--save-album-uris", help="Save processed album URIs to albums.txt"
     ),
@@ -66,7 +71,7 @@ def main(
         typer.echo(
             format_error(
                 f"product of width and height dimensions ({dimensions.width} x"
-                f" {dimensions.height} = {dimensions.width * dimensions.height}) must be less than"
+                f" {dimensions.height} = {dimensions.width * dimensions.height}) must be less than or equal to"
                 f" the number of albums provided ({len(albums)})"
             )
         )
@@ -98,7 +103,7 @@ def main(
             download_cover(album, cover_path, album_cover_resolution)
     print()
 
-    features = []
+    features: List[collage.ImageFeatures] = []
 
     # this feature does not work properly right now with changing sources across multiple runs
     # disable for now
@@ -111,8 +116,32 @@ def main(
     else:
         for i, a in enumerate(album_cover_paths):
             print(f"Getting features for art {i+1}/{len(album_cover_paths)}", end="\r")
-            features.append(collage.get_features(a))
+            new_feature = collage.get_features(a)
+
+            # could save minimal runtime by keeping a set of phashes rather than pairwise comparisons,
+            # but many remix albums are simple art recolors that might get missed by the luminance-based
+            # phash algorithm, so we still need to do pairwise color comparisons.
+            if dedupe:
+                present = False
+                for feature in features:
+                    if new_feature.is_likely_duplicate(feature):
+                        present = True
+                        break
+                if not present:
+                    features.append(new_feature)
+            else:
+                features.append(new_feature)
         print()
+        if dedupe:
+            print(f"Found {len(features)} unique album covers", end="\n")
+            if len(features) < dimensions.width * dimensions.height:
+                typer.echo(
+                    format_error(
+                        f"product of width and height dimensions ({dimensions.width} x"
+                        f" {dimensions.height} = {dimensions.width * dimensions.height}) must be less than or equal to"
+                        f" the number of unique album covers({len(features)})"
+                    )
+                )
 
     # with open(".features_cache", "w", encoding="utf-8") as of:
     #     json.dump([f.to_dict() for f in features], of)

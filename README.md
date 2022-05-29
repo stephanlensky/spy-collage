@@ -56,6 +56,9 @@ Options:
                                   singles  [default: no-discover]
   --market TEXT                   When discovering albums, only consider those
                                   available in this market  [default: US]
+  --dedupe / --no-dedupe          Experimental: When fetching album art, skip
+                                  albums whose art is identical to an already-
+                                  fetched album  [default: no-dedupe]                    
   --save-album-uris               Save processed album URIs to albums.txt
   -r, --album-cover-resolution [small|medium|large]
                                   Resolution to download album covers at

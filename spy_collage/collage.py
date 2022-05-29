@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 import colorgram
+import imagehash  # type: ignore
 import numpy as np
 from PIL import Image
 from skimage import color as spaces
@@ -15,6 +18,10 @@ class ImageFeatures:
     features: np.ndarray
     image_path: Path
     __image: Optional[Image.Image]
+    __image_phash: Optional[imagehash.ImageHash]
+
+    def is_likely_duplicate(self, f: ImageFeatures) -> bool:
+        return np.array_equal(self.features, f.features) and (self.image_phash == f.image_phash)
 
     @property
     def image(self):
@@ -22,12 +29,18 @@ class ImageFeatures:
             self.__image = Image.open(self.image_path)
         return self.__image
 
+    @property
+    def image_phash(self):
+        if self.__image_phash is None:
+            self.__image_phash = imagehash.phash(self.image)
+        return self.__image_phash
+
     def to_dict(self):
         return {"features": list(self.features), "image_path": str(self.image_path)}
 
     @staticmethod
     def from_dict(d: dict):
-        return ImageFeatures(np.asarray(d["features"]), Path(d["image_path"]), None)
+        return ImageFeatures(np.asarray(d["features"]), Path(d["image_path"]), None, None)
 
 
 def get_features(image_path) -> ImageFeatures:
@@ -37,7 +50,7 @@ def get_features(image_path) -> ImageFeatures:
         rgb = list(c.rgb)
         lab = spaces.rgb2lab(rgb)
         features.extend(lab)
-    return ImageFeatures(np.asarray(features), image_path, None)
+    return ImageFeatures(np.asarray(features), image_path, None, None)
 
 
 def lap_collage(
