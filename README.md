@@ -24,10 +24,10 @@ First, clone the repository:
 git clone https://github.com/stephanlensky/spy-collage.git
 ```
 
-Then install with `pip`:
+Then install with [`poetry`](https://python-poetry.org/):
 
 ```
-pip install -e spy-collage/
+poetry install
 ```
 
 Additionally, Spotify API credentials are required. After setting up an application on the [Spotify Developers](https://developer.spotify.com/) site, credentials must be set as environment variables. Before running the application, ensure that `SPOTIPY_CLIENT_ID` and `SPOTIPY_CLIENT_SECRET` are set appropriately.
@@ -58,7 +58,7 @@ Options:
                                   available in this market  [default: US]
   --dedupe / --no-dedupe          Experimental: When fetching album art, skip
                                   albums whose art is identical to an already-
-                                  fetched album  [default: no-dedupe]                    
+                                  fetched album  [default: no-dedupe]
   --save-album-uris               Save processed album URIs to albums.txt
   -r, --album-cover-resolution [small|medium|large]
                                   Resolution to download album covers at
@@ -74,5 +74,5 @@ Options:
 For example, to generate a 12x9 collage from `.\example_source_lists\selected_albums.txt` using the `horizontal_spectrum` preset and small art resolution:
 
 ```
-spy-collage -r small -d 12x9 -p horizontal_spectrum .\example_source_lists\selected_albums.txt
+poetry run spy-collage -r small -d 12x9 -p horizontal_spectrum .\example_source_lists\selected_albums.txt
 ```
