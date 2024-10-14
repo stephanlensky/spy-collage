@@ -1,10 +1,1 @@
-spotify:playlist:186CCeXTqt2NJuhhaRbTY0
-spotify:playlist:04C8F5shMiHXn5W5agfUuY
-spotify:playlist:3RVfousOtdtuYhA0jSSLy2
-spotify:playlist:7tv2Gz9dlDgSGNNM0C2xiR
-spotify:playlist:282IRpT07UjAmX3DyXd2FP
-spotify:playlist:590Nfmp2FU0Ea8OhaiZ7uP
-spotify:playlist:32CL3LueMyq4voBKrQfmtO
-spotify:playlist:7BgJ5Gk9Te1eQqyJRdw9u0
-spotify:playlist:0Q0SxS4yrLBy0hl2qApXCj
-spotify:playlist:0ZtuJtS4EjaRYmzbUFTKzW
+spotify:playlist:00umOsfoBHTUmXJWVVYobz
